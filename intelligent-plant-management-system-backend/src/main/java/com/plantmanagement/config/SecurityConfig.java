@@ -18,7 +18,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/plants/**").permitAll() // ✅ allow addproduct API
+                        .requestMatchers("/api/plants/**").permitAll()
+                        .requestMatchers("/chat/**").permitAll()   // ⭐ allow AI API
                         .anyRequest().permitAll()
                 );
 
@@ -31,10 +32,10 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173")
+                        .allowedOriginPatterns("http://localhost:5173")   // ⭐ correct for Spring Boot 3+
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true);   // ⭐ now VALID because we removed "*"
             }
         };
     }

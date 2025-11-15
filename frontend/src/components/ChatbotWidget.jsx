@@ -11,7 +11,7 @@ export default function ChatbotWidget() {
     const userMsg = { role: 'user', text: input }
     setMessages([...messages, userMsg])
     const res = await ask(input)
-    setMessages([...messages, userMsg, { role: 'bot', text: res.answer || '...' }])
+    setMessages(prev => [...prev, userMsg, { role: 'bot', text: res.answer }])
     setInput('')
   }
 

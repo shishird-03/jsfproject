@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ask } from "../services/chatService";
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
@@ -7,24 +8,33 @@ export default function ChatBot() {
   ]);
   const [input, setInput] = useState("");
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = async () => {
+  if (!input.trim()) return;
 
-    const newMessage = { sender: "user", text: input };
-    setMessages([...messages, newMessage]);
+  const newMessage = { sender: "user", text: input };
+  setMessages((prev) => [...prev, newMessage]);
 
-    // Simple simulated AI response (replace with Gemini/OpenAI API later)
+  try {
+    // Call backend AI
+    const res = await ask(input);
+
     const response = {
       sender: "bot",
-      text:
-        input.toLowerCase().includes("water")
-          ? "Most indoor plants prefer watering once every 5-7 days 💧."
-          : "That’s a great question! I’ll soon connect you with plant info 🌿.",
+      text: res.answer || "No response from AI",
     };
 
-    setTimeout(() => setMessages((prev) => [...prev, response]), 600);
-    setInput("");
-  };
+    setMessages((prev) => [...prev, response]);
+  } catch (err) {
+    console.error("ERROR FROM AI:", err);
+    setMessages((prev) => [
+      ...prev,
+      { sender: "bot", text: "AI error occurred ❌" },
+    ]);
+  }
+
+  setInput("");
+};
+
 
   return (
     <>
